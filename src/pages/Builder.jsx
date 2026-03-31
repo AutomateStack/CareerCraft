@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { motion } from 'framer-motion';
 import { Save, RotateCcw, CheckCircle } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
 import ResumePreview from '../components/ResumePreview';
