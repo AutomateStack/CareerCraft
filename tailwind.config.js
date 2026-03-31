@@ -7,12 +7,12 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: '#1a1a2e',
-        accent: '#e94560',
-        surface: '#16213e',
-        textLight: '#eaeaea',
-        muted: '#a8a8b3',
-        darkBg: '#0f0f23',
+        primary: '#f5f7fa', // light background
+        accent: '#2563eb', // blue accent
+        surface: '#ffffff', // card background
+        textLight: '#22223b', // main text
+        muted: '#6c757d', // muted text
+        darkBg: '#e9ecef', // light gray background
       },
       fontFamily: {
         heading: ['"Playfair Display"', 'serif'],

@@ -16,12 +16,13 @@ export default function TemplateSelector() {
 
   return (
     <div className="relative group">
+      <label htmlFor="template-selector" className="block text-xs font-semibold text-muted mb-1">Resume Template</label>
       <select
         value={resume.template}
         onChange={(e) => setTemplate(e.target.value)}
-        className="appearance-none bg-surface border border-white/10 rounded-lg px-3 py-2
+        className="appearance-none bg-white border border-gray-300 rounded-lg px-3 py-2
                    text-sm text-textLight cursor-pointer hover:border-accent/30 focus:outline-none
-                   focus:border-accent/50 transition-all pr-8"
+                   focus:border-accent/50 transition-all pr-8 shadow-sm"
         id="template-selector"
       >
         {templates.map(t => (
@@ -30,7 +31,15 @@ export default function TemplateSelector() {
           </option>
         ))}
       </select>
-      <Layout size={14} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted pointer-events-none" />
+      <Layout size={14} className="absolute right-2.5 top-8 text-muted pointer-events-none" />
+      <div className="mt-2 grid grid-cols-2 gap-2">
+        {templates.map(t => (
+          <div key={t.id} className={`flex items-center gap-2 px-2 py-1 rounded border ${resume.template === t.id ? 'border-accent bg-accent/10' : 'border-gray-200 bg-white'}`}>
+            <t.icon size={16} className="text-accent" />
+            <span className="text-xs font-medium">{t.label}</span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

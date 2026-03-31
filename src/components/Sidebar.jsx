@@ -51,14 +51,14 @@ export default function Sidebar() {
   };
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col bg-white border-r border-gray-200 min-h-screen">
       {/* Progress Bar */}
-      <div className="p-4 border-b border-white/10">
+      <div className="p-4 border-b border-gray-200 bg-gray-50">
         <div className="flex items-center justify-between mb-2">
           <span className="text-xs font-medium text-muted">Resume Progress</span>
           <span className="text-xs font-bold text-accent">{completion}%</span>
         </div>
-        <div className="w-full h-2 bg-darkBg rounded-full overflow-hidden">
+        <div className="w-full h-2 bg-primary rounded-full overflow-hidden">
           <motion.div
             className="h-full accent-gradient rounded-full"
             initial={{ width: 0 }}
@@ -69,7 +69,7 @@ export default function Sidebar() {
       </div>
 
       {/* Sections Accordion */}
-      <div className="flex-1 overflow-y-auto p-3 space-y-1.5">
+      <div className="flex-1 overflow-y-auto p-3 space-y-1.5 bg-white">
         {sections.map((section) => {
           const Icon = section.icon;
           const isOpen = openSection === section.id;
@@ -124,7 +124,7 @@ export default function Sidebar() {
         })}
 
         {/* AI Tools Panel */}
-        <div className="mt-4 pt-4 border-t border-white/10">
+        <div className="mt-4 pt-4 border-t border-gray-200">
           <AIPanel />
         </div>
       </div>
