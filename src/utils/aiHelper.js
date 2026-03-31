@@ -1,16 +1,36 @@
-const API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
-
 async function callOpenAI(prompt, maxTokens = 1000) {
-  if (!API_KEY) {
-    throw new Error('OpenAI API key not configured. Add VITE_OPENAI_API_KEY to your .env file.');
-  }
-
   try {
+    const isProd = import.meta.env.PROD;
+    const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
+
+    // In production, requests go through the serverless function so API keys stay private.
+    if (isProd) {
+      const response = await fetch('/api/openai', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ prompt, maxTokens }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({}));
+        throw new Error(error.error || `API request failed with status ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data.content?.trim() || '';
+    }
+
+    if (!apiKey) {
+      throw new Error('OpenAI API key not configured for local development. Add VITE_OPENAI_API_KEY to your .env file.');
+    }
+
     const response = await fetch('/api/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${API_KEY}`,
+        'Authorization': `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
         model: 'gpt-4o-mini',
@@ -108,5 +128,6 @@ Return a JSON object with this exact format (no markdown, no code blocks, just r
 }
 
 export function isAIConfigured() {
-  return !!API_KEY;
+  // Production uses server-side key management in Vercel.
+  return import.meta.env.PROD || !!import.meta.env.VITE_OPENAI_API_KEY;
 }

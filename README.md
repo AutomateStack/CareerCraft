@@ -1,69 +1,119 @@
-# CareerCraft - AI-Powered Resume Builder
+# CareerCraft - AI Resume Builder
 
-CareerCraft is a modern, AI-powered resume builder designed to help you create professional, ATS-optimized resumes efficiently.
+CareerCraft helps users build ATS-friendly resumes with live preview, templates, AI-assisted content improvement, and PDF export.
 
 ## Features
 
-- **Live Preview:** See your resume update in real-time as you type.
-- **Multiple Templates:** Choose from beautifully designed templates (Classic, Modern, Minimal).
-- **AI Enhancement:**
-  - **Bullet Point Enhancer:** Rewrite your experience bullets dynamically using AI.
-  - **Summary Generator:** Automatically craft a professional summary based on your details.
-  - **ATS Checker:** Compare your resume against a job description to find missing keywords.
-- **PDF Export:** Export your finished resume to a high-quality PDF in A4 format.
-- **Auto-Save:** Your progress is automatically saved to local storage.
-- **Dark Mode UI:** A sleek, glassmorphic dark theme for the editor and a light theme for the actual resume.
+- Live resume preview while editing
+- Multiple templates (Classic, Modern, Minimal)
+- AI assistance:
+  - Bullet point enhancement
+  - Professional summary generation
+  - ATS keyword check against a job description
+- PDF export (A4)
+- Local auto-save
 
 ## Tech Stack
 
-- **Frontend:** React 18, Vite
-- **Styling:** Tailwind CSS v3
-- **Routing:** React Router v6
-- **Animations:** Framer Motion
-- **Icons:** Lucide React
-- **AI Integration:** OpenAI GPT-4o-mini (via Vite Proxy)
-- **PDF Generation:** html2canvas, jsPDF
+- React 19 + Vite 8
+- Tailwind CSS 3
+- React Router 7
+- Framer Motion
+- Lucide React
+- html2canvas + jsPDF
+- Vercel Serverless Function for OpenAI in production
 
-## Getting Started
+## Local Setup
 
 ### Prerequisites
 
-- Node.js installed on your machine.
-- An OpenAI API Key for the AI features.
+- Node.js 18+
+- npm
+- OpenAI API key
 
-### Installation
+### 1. Install dependencies
 
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/AutomateStack/CareerCraft.git
-   cd CareerCraft
-   ```
+```bash
+npm install
+```
 
-2. **Install dependencies:**
-   ```bash
-   npm install
-   ```
+### 2. Configure environment
 
-3. **Set up Environment Variables:**
-   - Create a `.env` file in the root directory.
-   - Add your OpenAI API key:
-     ```env
-     VITE_OPENAI_API_KEY=your_openai_api_key_here
-     ```
+Copy `.env.example` to `.env` and update values.
 
-4. **Run the Development Server:**
-   ```bash
-   npm run dev
-   ```
-   Open [http://localhost:5173](http://localhost:5173) in your browser.
+```env
+VITE_OPENAI_API_KEY=your_openai_api_key_here
+OPENAI_API_KEY=your_openai_api_key_here
+```
 
-## Deployment to Vercel
+Notes:
+- Local `npm run dev` uses `VITE_OPENAI_API_KEY` (via Vite proxy).
+- Production on Vercel uses `OPENAI_API_KEY` in the serverless function.
 
-The application is structured to be easily deployed to Vercel.
+### 3. Run local development
 
-1. Push your repository to GitHub.
-2. Sign in to Vercel and import your GitHub repository.
-3. In the project settings on Vercel, navigate to **Environment Variables** and add `VITE_OPENAI_API_KEY` with your OpenAI API Key.
-4. Click **Deploy**.
+```bash
+npm run dev
+```
 
-*Note: For production, a serverless function is recommended for API calls to prevent your API key from being exposed if CORS rules are completely bypassed in a static build.*
+### 4. Build for production
+
+```bash
+npm run build
+```
+
+## GitHub Push (Safe Flow)
+
+If `.env` was ever committed, remove it from tracking and rotate key(s).
+
+```bash
+git rm --cached .env
+git add .
+git commit -m "chore: secure env handling and vercel deployment setup"
+git push origin main
+```
+
+If this is your first push from local:
+
+```bash
+git remote add origin https://github.com/<your-username>/<your-repo>.git
+git branch -M main
+git push -u origin main
+```
+
+## Vercel Deployment (Live Site)
+
+### 1. Import repository
+
+1. Open Vercel Dashboard.
+2. Click **Add New > Project**.
+3. Import this GitHub repository.
+
+### 2. Configure build settings
+
+- Framework Preset: `Vite`
+- Build Command: `npm run build`
+- Output Directory: `dist`
+- Install Command: `npm install`
+
+### 3. Add environment variable
+
+In Vercel Project Settings > Environment Variables:
+
+- `OPENAI_API_KEY` = your OpenAI key
+
+Do not set `VITE_OPENAI_API_KEY` in production unless you intentionally want to expose it to the browser.
+
+### 4. Deploy
+
+Click **Deploy**. Vercel will generate a production URL.
+
+### 5. Custom domain (optional)
+
+Project Settings > Domains > Add domain, then follow DNS instructions.
+
+## Project Notes
+
+- `api/openai.js` handles production OpenAI requests on the server side.
+- `vercel.json` includes SPA routing fallback so React routes work on refresh.
+- `.env` and `.env.*` are ignored; `.env.example` is kept for onboarding.
