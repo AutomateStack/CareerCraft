@@ -29,22 +29,29 @@ export default function MinimalTemplate({ resumeData }) {
         }}>
           {personalInfo.fullName || 'Your Name'}
         </h1>
-        <div style={{
-          display: 'flex',
-          flexWrap: 'wrap',
-          gap: '16px',
-          fontSize: '8.5pt',
-          color: '#777',
-          paddingBottom: '20px',
-          borderBottom: '1px solid #e5e5e5',
-        }}>
-          {personalInfo.email && <span>{personalInfo.email}</span>}
-          {personalInfo.phone && <span>{personalInfo.phone}</span>}
-          {personalInfo.location && <span>{personalInfo.location}</span>}
-          {personalInfo.linkedin && <span>{personalInfo.linkedin}</span>}
-          {personalInfo.github && <span>{personalInfo.github}</span>}
-          {personalInfo.portfolio && <span>{personalInfo.portfolio}</span>}
-        </div>
+        {(() => {
+          const cleanUrl = (url) => (url || '').replace(/^https?:\/\/(www\.)?/, '');
+          const items = [
+            personalInfo.email,
+            personalInfo.phone,
+            personalInfo.location,
+            personalInfo.linkedin && `LinkedIn: ${cleanUrl(personalInfo.linkedin)}`,
+            personalInfo.github && `GitHub: ${cleanUrl(personalInfo.github)}`,
+            personalInfo.portfolio && `Portfolio: ${cleanUrl(personalInfo.portfolio)}`,
+          ].filter(Boolean);
+          return (
+            <p style={{
+              fontSize: '8.5pt',
+              color: '#777',
+              margin: 0,
+              paddingBottom: '20px',
+              borderBottom: '1px solid #e5e5e5',
+              lineHeight: '1.7',
+            }}>
+              {items.join('  •  ')}
+            </p>
+          );
+        })()}
       </div>
 
       {/* Summary */}

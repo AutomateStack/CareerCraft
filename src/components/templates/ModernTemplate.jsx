@@ -58,17 +58,17 @@ export default function ModernTemplate({ resumeData }) {
             )}
             {personalInfo.linkedin && (
               <div style={contactItem}>
-                <span style={contactIcon}>in</span> {personalInfo.linkedin}
+                <span style={contactIcon}>in</span> {personalInfo.linkedin.replace(/^https?:\/\/(www\.)?/, '')}
               </div>
             )}
             {personalInfo.github && (
               <div style={contactItem}>
-                <span style={contactIcon}>⌨</span> {personalInfo.github}
+                <span style={contactIcon}>⌨</span> {personalInfo.github.replace(/^https?:\/\/(www\.)?/, '')}
               </div>
             )}
             {personalInfo.portfolio && (
               <div style={contactItem}>
-                <span style={contactIcon}>🌐</span> {personalInfo.portfolio}
+                <span style={contactIcon}>🌐</span> {personalInfo.portfolio.replace(/^https?:\/\/(www\.)?/, '')}
               </div>
             )}
           </div>

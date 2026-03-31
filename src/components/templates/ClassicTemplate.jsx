@@ -30,18 +30,22 @@ export default function ClassicTemplate({ resumeData }) {
         }}>
           {personalInfo.fullName || 'Your Name'}
         </h1>
-        <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '12px', fontSize: '9pt', color: '#444' }}>
-          {personalInfo.email && (
-            <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-              {personalInfo.email}
-            </span>
-          )}
-          {personalInfo.phone && <span>{personalInfo.phone}</span>}
-          {personalInfo.location && <span>{personalInfo.location}</span>}
-          {personalInfo.linkedin && <span>{personalInfo.linkedin}</span>}
-          {personalInfo.github && <span>{personalInfo.github}</span>}
-          {personalInfo.portfolio && <span>{personalInfo.portfolio}</span>}
-        </div>
+        {(() => {
+          const cleanUrl = (url) => (url || '').replace(/^https?:\/\/(www\.)?/, '');
+          const items = [
+            personalInfo.email,
+            personalInfo.phone,
+            personalInfo.location,
+            personalInfo.linkedin && `LinkedIn: ${cleanUrl(personalInfo.linkedin)}`,
+            personalInfo.github && `GitHub: ${cleanUrl(personalInfo.github)}`,
+            personalInfo.portfolio && `Portfolio: ${cleanUrl(personalInfo.portfolio)}`,
+          ].filter(Boolean);
+          return (
+            <p style={{ fontSize: '9pt', color: '#444', margin: 0, lineHeight: '1.6' }}>
+              {items.join('  •  ')}
+            </p>
+          );
+        })()}
       </div>
 
       {/* Summary */}
