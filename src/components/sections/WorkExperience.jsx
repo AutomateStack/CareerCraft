@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useResume } from '../../context/ResumeContext';
 import { Plus, Trash2, Sparkles, GripVertical } from 'lucide-react';
-import { AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const emptyExperience = {
   company: '',

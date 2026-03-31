@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, User, Briefcase, GraduationCap, Wrench, FolderOpen, Award, Bot } from 'lucide-react';
 import PersonalInfo from './sections/PersonalInfo';
 import WorkExperience from './sections/WorkExperience';

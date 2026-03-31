@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useResume } from '../../context/ResumeContext';
 import { X } from 'lucide-react';
-import { AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function Skills() {
   const { resume, updateField } = useResume();
