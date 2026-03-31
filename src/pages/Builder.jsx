@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion';
 import { Save, RotateCcw, CheckCircle } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
 import ResumePreview from '../components/ResumePreview';
@@ -9,7 +8,7 @@ import { useResume } from '../context/ResumeContext';
 import { Link } from 'react-router-dom';
 
 export default function Builder() {
-  const { resetResume, getCompletionPercentage } = useResume();
+  const { resetResume } = useResume();
   const [saved, setSaved] = useState(false);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [showMobileEditor, setShowMobileEditor] = useState(true);

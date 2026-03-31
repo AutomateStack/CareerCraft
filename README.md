@@ -10,8 +10,11 @@ CareerCraft helps users build ATS-friendly resumes with live preview, templates,
   - Bullet point enhancement
   - Professional summary generation
   - ATS keyword check against a job description
+  - LinkedIn/profile text import into editable resume draft
 - PDF export (A4)
 - Local auto-save
+- API protections: rate limiting + prompt size validation
+- GitHub Actions CI (build + non-blocking lint)
 
 ## Tech Stack
 
@@ -49,6 +52,19 @@ OPENAI_API_KEY=your_openai_api_key_here
 Notes:
 - Local `npm run dev` uses `VITE_OPENAI_API_KEY` (via Vite proxy).
 - Production on Vercel uses `OPENAI_API_KEY` in the serverless function.
+
+## AI Import from LinkedIn
+
+CareerCraft supports generating a resume draft from:
+
+- LinkedIn URL (as a profile label/reference)
+- Pasted profile text (About, Experience, Skills, Education)
+
+Important:
+
+- The app does not scrape LinkedIn pages directly.
+- For best results, paste the profile text you want converted into resume sections.
+- You can choose to replace existing content or merge with your current resume.
 
 ### 3. Run local development
 
@@ -108,12 +124,27 @@ Do not set `VITE_OPENAI_API_KEY` in production unless you intentionally want to 
 
 Click **Deploy**. Vercel will generate a production URL.
 
-### 5. Custom domain (optional)
+### 5. Auto Deploy Behavior
+
+- Every push to `main` triggers a production deploy in Vercel.
+- Pull requests/branch pushes trigger preview deployments.
+
+### 6. Custom domain (optional)
 
 Project Settings > Domains > Add domain, then follow DNS instructions.
 
 ## Project Notes
 
 - `api/openai.js` handles production OpenAI requests on the server side.
+- `api/linkedin-import.js` generates structured resume drafts from profile input.
+- `api/_lib/security.js` applies basic in-memory rate limiting and input validation.
 - `vercel.json` includes SPA routing fallback so React routes work on refresh.
 - `.env` and `.env.*` are ignored; `.env.example` is kept for onboarding.
+
+## CI
+
+This repository now includes [`.github/workflows/ci.yml`](.github/workflows/ci.yml), which runs on pushes and pull requests:
+
+- `npm ci`
+- `npm run build`
+- `npm run lint` (non-blocking)

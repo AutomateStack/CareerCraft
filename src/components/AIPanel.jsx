@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Sparkles, ChevronDown, CheckCircle, AlertCircle, XCircle } from 'lucide-react';
+import { AnimatePresence } from 'framer-motion';
+import { Search, Sparkles, ChevronDown, CheckCircle, AlertCircle, XCircle, Link2, WandSparkles } from 'lucide-react';
 import { useResume } from '../context/ResumeContext';
 import { isAIConfigured } from '../utils/aiHelper';
 
@@ -10,7 +10,93 @@ export default function AIPanel() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
-  const { resume } = useResume();
+  const [linkedinUrl, setLinkedinUrl] = useState('');
+  const [profileText, setProfileText] = useState('');
+  const [importLoading, setImportLoading] = useState(false);
+  const [importError, setImportError] = useState('');
+  const [importSuccess, setImportSuccess] = useState('');
+  const [replaceExisting, setReplaceExisting] = useState(true);
+  const { resume, dispatch } = useResume();
+
+  const toArray = (value) => (Array.isArray(value) ? value : []);
+  const text = (value) => (typeof value === 'string' ? value.trim() : '');
+
+  const withIds = (items) => toArray(items).map((item, idx) => ({
+    ...item,
+    id: item?.id || Date.now() + idx,
+  }));
+
+  const normalizeDraft = (draft) => ({
+    personalInfo: {
+      fullName: text(draft?.personalInfo?.fullName),
+      email: text(draft?.personalInfo?.email),
+      phone: text(draft?.personalInfo?.phone),
+      linkedin: text(draft?.personalInfo?.linkedin),
+      github: text(draft?.personalInfo?.github),
+      location: text(draft?.personalInfo?.location),
+      portfolio: text(draft?.personalInfo?.portfolio),
+    },
+    summary: text(draft?.summary),
+    experience: withIds(
+      toArray(draft?.experience).map((exp) => ({
+        company: text(exp?.company),
+        role: text(exp?.role),
+        location: text(exp?.location),
+        startDate: text(exp?.startDate),
+        endDate: text(exp?.endDate),
+        current: Boolean(exp?.current),
+        bullets: toArray(exp?.bullets).map((b) => text(b)).filter(Boolean),
+      }))
+    ),
+    education: withIds(
+      toArray(draft?.education).map((edu) => ({
+        degree: text(edu?.degree),
+        institution: text(edu?.institution),
+        year: text(edu?.year),
+        gpa: text(edu?.gpa),
+      }))
+    ),
+    skills: toArray(draft?.skills).map((s) => text(s)).filter(Boolean),
+    projects: withIds(
+      toArray(draft?.projects).map((proj) => ({
+        title: text(proj?.title),
+        description: text(proj?.description),
+        techStack: text(proj?.techStack),
+        liveLink: text(proj?.liveLink),
+        githubLink: text(proj?.githubLink),
+      }))
+    ),
+    certifications: withIds(
+      toArray(draft?.certifications).map((cert) => ({
+        name: text(cert?.name),
+        issuer: text(cert?.issuer),
+        year: text(cert?.year),
+      }))
+    ),
+  });
+
+  const mergeResume = (current, imported) => {
+    const mergedSkills = Array.from(new Set([...(current.skills || []), ...(imported.skills || [])]));
+
+    return {
+      ...current,
+      personalInfo: {
+        ...current.personalInfo,
+        ...Object.fromEntries(
+          Object.entries(imported.personalInfo || {}).map(([key, val]) => [
+            key,
+            val || current.personalInfo?.[key] || '',
+          ])
+        ),
+      },
+      summary: imported.summary || current.summary || '',
+      experience: [...(current.experience || []), ...(imported.experience || [])],
+      education: [...(current.education || []), ...(imported.education || [])],
+      skills: mergedSkills,
+      projects: [...(current.projects || []), ...(imported.projects || [])],
+      certifications: [...(current.certifications || []), ...(imported.certifications || [])],
+    };
+  };
 
   const handleATSCheck = async () => {
     if (!jobDesc.trim()) return;
@@ -26,6 +112,29 @@ export default function AIPanel() {
       setError(err.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleLinkedInImport = async () => {
+    setImportLoading(true);
+    setImportError('');
+    setImportSuccess('');
+
+    try {
+      const { importResumeFromLinkedIn } = await import('../utils/aiHelper.js');
+      const rawDraft = await importResumeFromLinkedIn(linkedinUrl, profileText);
+      const normalized = normalizeDraft(rawDraft);
+
+      const nextResume = replaceExisting
+        ? { ...resume, ...normalized }
+        : mergeResume(resume, normalized);
+
+      dispatch({ type: 'LOAD', data: nextResume });
+      setImportSuccess('Resume draft generated and applied successfully.');
+    } catch (err) {
+      setImportError(err.message || 'Import failed. Please try again.');
+    } finally {
+      setImportLoading(false);
     }
   };
 
@@ -64,6 +173,71 @@ export default function AIPanel() {
                   </p>
                 </div>
               )}
+
+              {/* LinkedIn/Profile Import */}
+              <div className="glass-card p-4 space-y-3">
+                <div className="flex items-center gap-2">
+                  <Link2 size={16} className="text-accent" />
+                  <h4 className="text-sm font-semibold text-textLight">LinkedIn to Resume Draft</h4>
+                </div>
+                <p className="text-xs text-muted">
+                  Paste your LinkedIn URL and profile text (About, Experience, Skills) to auto-generate a resume draft.
+                </p>
+                <input
+                  value={linkedinUrl}
+                  onChange={(e) => setLinkedinUrl(e.target.value)}
+                  placeholder="https://linkedin.com/in/your-profile"
+                  className="input-field text-xs"
+                />
+                <textarea
+                  value={profileText}
+                  onChange={(e) => setProfileText(e.target.value)}
+                  placeholder="Paste profile text here (About, Experience, Skills, Education)..."
+                  rows={5}
+                  className="input-field resize-none text-xs"
+                />
+
+                <label className="flex items-center gap-2 text-xs text-muted cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={replaceExisting}
+                    onChange={(e) => setReplaceExisting(e.target.checked)}
+                    className="rounded border-white/20 bg-darkBg text-accent focus:ring-accent/25"
+                  />
+                  Replace current resume content
+                </label>
+
+                <button
+                  onClick={handleLinkedInImport}
+                  disabled={importLoading || (!linkedinUrl.trim() && !profileText.trim())}
+                  className="btn-primary text-xs py-2 px-4 w-full justify-center disabled:opacity-50"
+                >
+                  {importLoading ? (
+                    <span className="flex items-center gap-2">
+                      <span className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      Generating Draft...
+                    </span>
+                  ) : (
+                    <>
+                      <WandSparkles size={14} /> Generate Resume Draft
+                    </>
+                  )}
+                </button>
+
+                {importError && (
+                  <div className="flex items-start gap-2 p-2 bg-red-500/10 border border-red-500/20 rounded-lg">
+                    <XCircle size={14} className="text-red-400 mt-0.5" />
+                    <p className="text-xs text-red-300">{importError}</p>
+                  </div>
+                )}
+
+                {importSuccess && (
+                  <div className="flex items-start gap-2 p-2 bg-green-500/10 border border-green-500/20 rounded-lg">
+                    <CheckCircle size={14} className="text-green-400 mt-0.5" />
+                    <p className="text-xs text-green-300">{importSuccess}</p>
+                  </div>
+                )}
+              </div>
 
               {/* ATS Checker */}
               <div className="glass-card p-4 space-y-3">

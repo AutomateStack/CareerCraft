@@ -1,6 +1,6 @@
 import { useResume } from '../../context/ResumeContext';
 import { Plus, Trash2, GripVertical } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 
 const emptyEducation = {
   degree: '',

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useResume } from '../../context/ResumeContext';
 import { Plus, Trash2, Sparkles, GripVertical } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 
 const emptyExperience = {
   company: '',
@@ -14,7 +14,7 @@ const emptyExperience = {
 };
 
 export default function WorkExperience() {
-  const { resume, addEntry, updateEntry, removeEntry } = useResume();
+  const { resume, addEntry, updateEntry, removeEntry, reorderEntries } = useResume();
   const [enhancingIdx, setEnhancingIdx] = useState(null);
   const [dragIdx, setDragIdx] = useState(null);
 
@@ -68,7 +68,7 @@ export default function WorkExperience() {
             onDragOver={(e) => e.preventDefault()}
             onDrop={() => {
               if (dragIdx !== null && dragIdx !== idx) {
-                const { reorderEntries } = resume;
+                reorderEntries('experience', dragIdx, idx);
               }
               setDragIdx(null);
             }}

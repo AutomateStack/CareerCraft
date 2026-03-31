@@ -1,4 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
+// eslint-disable-next-line no-unused-vars
 import { motion } from 'framer-motion';
 import { useResume } from '../context/ResumeContext';
 import Navbar from '../components/Navbar';
