@@ -5,7 +5,7 @@ import { useResume } from '../context/ResumeContext';
 import { isAIConfigured } from '../utils/aiHelper';
 
 export default function AIPanel() {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
   const [jobDesc, setJobDesc] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);

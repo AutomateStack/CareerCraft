@@ -156,14 +156,12 @@ export default function Templates() {
                       </div>
                       {/* Hover overlay */}
                       <div className="absolute inset-0 bg-accent/0 group-hover:bg-accent/10 transition-colors duration-300 flex items-center justify-center">
-                        <motion.button
+                        <button
                           onClick={() => handleSelect(t.id)}
-                          initial={{ opacity: 0, scale: 0.8 }}
-                          whileHover={{ scale: 1.05 }}
-                          className="btn-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300 shadow-lg"
+                          className="btn-primary opacity-0 group-hover:opacity-100 scale-90 group-hover:scale-100 transition-all duration-300 shadow-lg"
                         >
                           Use This Template
-                        </motion.button>
+                        </button>
                       </div>
                     </div>
 
