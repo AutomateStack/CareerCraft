@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Sparkles, ChevronDown, CheckCircle, AlertCircle, XCircle, Link2, WandSparkles } from 'lucide-react';
 import { useResume } from '../context/ResumeContext';
 import { isAIConfigured } from '../utils/aiHelper';

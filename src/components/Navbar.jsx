@@ -1,4 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { FileText, Palette, Menu, X } from 'lucide-react';
 import { useState } from 'react';
 
