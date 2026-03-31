@@ -38,23 +38,22 @@ export default function ExportButton() {
       element.style.height = originalHeight;
       element.style.maxHeight = originalMaxHeight;
 
-      const imgData = canvas.toDataURL('image/png');
       const pdf = new jsPDF('p', 'mm', 'a4');
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = pdf.internal.pageSize.getHeight();
-      const imgWidth = canvas.width;
-      const imgHeight = canvas.height;
-      const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
-      const scaledWidth = imgWidth * ratio;
-      const scaledHeight = imgHeight * ratio;
-      const x = (pdfWidth - scaledWidth) / 2;
+      const pdfWidth = pdf.internal.pageSize.getWidth();   // 210 mm
+      const pdfHeight = pdf.internal.pageSize.getHeight(); // 297 mm
 
-      // Handle multi-page content
+      // Always scale by width so full A4 width is used — never clip right side
+      const widthRatio = pdfWidth / canvas.width;
+      const scaledWidth = pdfWidth;
+      const scaledHeight = canvas.height * widthRatio;
+
+      // Slice canvas into A4-height pages
       const totalPages = Math.ceil(scaledHeight / pdfHeight);
-      
+      const imgData = canvas.toDataURL('image/png');
+
       for (let page = 0; page < totalPages; page++) {
         if (page > 0) pdf.addPage();
-        pdf.addImage(imgData, 'PNG', x, -(page * pdfHeight), scaledWidth, scaledHeight);
+        pdf.addImage(imgData, 'PNG', 0, -(page * pdfHeight), scaledWidth, scaledHeight);
       }
 
       pdf.save('CareerCraft_Resume.pdf');

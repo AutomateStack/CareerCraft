@@ -2,11 +2,19 @@ import { useResume } from '../context/ResumeContext';
 import ClassicTemplate from './templates/ClassicTemplate';
 import ModernTemplate from './templates/ModernTemplate';
 import MinimalTemplate from './templates/MinimalTemplate';
+import ExecutiveTemplate from './templates/ExecutiveTemplate';
+import CreativeTemplate from './templates/CreativeTemplate';
+import TechTemplate from './templates/TechTemplate';
+import ElegantTemplate from './templates/ElegantTemplate';
 
 const templateComponents = {
   classic: ClassicTemplate,
   modern: ModernTemplate,
   minimal: MinimalTemplate,
+  executive: ExecutiveTemplate,
+  creative: CreativeTemplate,
+  tech: TechTemplate,
+  elegant: ElegantTemplate,
 };
 
 export default function ResumePreview() {

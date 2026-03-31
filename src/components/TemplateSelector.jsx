@@ -1,10 +1,14 @@
 import { useResume } from '../context/ResumeContext';
-import { Layout, Columns2, AlignLeft } from 'lucide-react';
+import { Layout, Columns2, AlignLeft, Briefcase, Palette, Code2, Feather } from 'lucide-react';
 
 const templates = [
-  { id: 'classic', label: 'Classic', icon: AlignLeft, desc: 'Traditional' },
-  { id: 'modern', label: 'Modern', icon: Columns2, desc: 'Two-column' },
-  { id: 'minimal', label: 'Minimal', icon: Layout, desc: 'Clean' },
+  { id: 'modern',    label: 'Modern',    icon: Columns2,   desc: 'Two-column dark' },
+  { id: 'classic',  label: 'Classic',   icon: AlignLeft,  desc: 'Traditional' },
+  { id: 'minimal',  label: 'Minimal',   icon: Layout,     desc: 'Clean & simple' },
+  { id: 'executive',label: 'Executive', icon: Briefcase,  desc: 'Corporate navy' },
+  { id: 'creative', label: 'Creative',  icon: Palette,    desc: 'Bold gradient' },
+  { id: 'tech',     label: 'Tech',      icon: Code2,      desc: 'Developer style' },
+  { id: 'elegant',  label: 'Elegant',   icon: Feather,    desc: 'Refined serif' },
 ];
 
 export default function TemplateSelector() {
