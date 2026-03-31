@@ -67,30 +67,6 @@ function parseJsonResponse(result, fallback) {
   }
 }
 
-function buildLinkedInImportPrompt(linkedinUrl, profileText) {
-  return `Create a polished resume draft from this profile information.
-
-Return ONLY valid JSON with this exact shape:
-{
-  "personalInfo": {"fullName":"", "email":"", "phone":"", "linkedin":"", "github":"", "location":"", "portfolio":""},
-  "summary": "",
-  "experience": [{"company":"", "role":"", "location":"", "startDate":"YYYY-MM", "endDate":"YYYY-MM", "current": false, "bullets": [""]}],
-  "education": [{"degree":"", "institution":"", "year":"", "gpa":""}],
-  "skills": [""],
-  "projects": [{"title":"", "description":"", "techStack":"", "liveLink":"", "githubLink":""}],
-  "certifications": [{"name":"", "issuer":"", "year":""}]
-}
-
-Rules:
-- Do not invent contact details.
-- If dates are unknown, use empty string.
-- Keep achievements concise and impact-focused.
-
-LinkedIn URL: ${linkedinUrl || 'Not provided'}
-Profile Text:
-${profileText || ''}`;
-}
-
 export async function enhanceBullet(bulletText) {
   if (!bulletText.trim()) return bulletText;
 
@@ -157,39 +133,6 @@ Return a JSON object with this exact format (no markdown, no code blocks, just r
     };
   }
 
-  return parsed;
-}
-
-export async function importResumeFromLinkedIn(linkedinUrl, profileText) {
-  if (!linkedinUrl.trim() && !profileText.trim()) {
-    throw new Error('Add a LinkedIn URL or profile text to generate a draft.');
-  }
-
-  if (import.meta.env.PROD) {
-    const response = await fetch('/api/linkedin-import', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ linkedinUrl, profileText }),
-    });
-
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({}));
-      throw new Error(error.error || `Import request failed with status ${response.status}`);
-    }
-
-    const data = await response.json();
-    if (!data?.draft) {
-      throw new Error('No import draft returned from AI.');
-    }
-    return data.draft;
-  }
-
-  const prompt = buildLinkedInImportPrompt(linkedinUrl, profileText);
-  const result = await callOpenAI(prompt, 1200);
-  const parsed = parseJsonResponse(result, null);
-  if (!parsed) {
-    throw new Error('Could not parse imported profile response. Please try again.');
-  }
   return parsed;
 }
 
