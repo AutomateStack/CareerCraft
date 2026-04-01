@@ -1,10 +1,15 @@
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useResume } from '../context/ResumeContext';
 import Navbar from '../components/Navbar';
 import ClassicTemplate from '../components/templates/ClassicTemplate';
 import ModernTemplate from '../components/templates/ModernTemplate';
 import MinimalTemplate from '../components/templates/MinimalTemplate';
+import ExecutiveTemplate from '../components/templates/ExecutiveTemplate';
+import CreativeTemplate from '../components/templates/CreativeTemplate';
+import TechTemplate from '../components/templates/TechTemplate';
+import ElegantTemplate from '../components/templates/ElegantTemplate';
 
 const sampleData = {
   personalInfo: {
@@ -68,18 +73,22 @@ const sampleData = {
 
 const templates = [
   {
-    id: 'classic',
-    name: 'Classic',
-    desc: 'Traditional and timeless. Perfect for conservative industries like finance, law, and academia.',
-    component: ClassicTemplate,
-    tags: ['Traditional', 'Professional', 'ATS-Friendly'],
-  },
-  {
     id: 'modern',
     name: 'Modern',
     desc: 'Bold two-column design with accent colors. Great for tech, marketing, and creative roles.',
     component: ModernTemplate,
     tags: ['Two-Column', 'Colorful', 'Eye-Catching'],
+    accentColor: '#2563eb',
+    category: 'Creative',
+  },
+  {
+    id: 'classic',
+    name: 'Classic',
+    desc: 'Traditional and timeless. Perfect for conservative industries like finance, law, and academia.',
+    component: ClassicTemplate,
+    tags: ['Traditional', 'Professional', 'ATS-Friendly'],
+    accentColor: '#374151',
+    category: 'Professional',
   },
   {
     id: 'minimal',
@@ -87,21 +96,67 @@ const templates = [
     desc: 'Clean and elegant with maximum whitespace. Ideal for design, UX, and senior positions.',
     component: MinimalTemplate,
     tags: ['Clean', 'Elegant', 'Whitespace'],
+    accentColor: '#6b7280',
+    category: 'Minimal',
+  },
+  {
+    id: 'executive',
+    name: 'Executive',
+    desc: 'Corporate navy with gold accents. Commands authority — perfect for C-suite and directors.',
+    component: ExecutiveTemplate,
+    tags: ['Corporate', 'Navy & Gold', 'Leadership'],
+    accentColor: '#1B2A4A',
+    category: 'Professional',
+  },
+  {
+    id: 'creative',
+    name: 'Creative',
+    desc: 'Bold purple-to-pink gradient header. Designed to stand out in creative and startup environments.',
+    component: CreativeTemplate,
+    tags: ['Bold', 'Gradient', 'Standout'],
+    accentColor: '#6C3FC5',
+    category: 'Creative',
+  },
+  {
+    id: 'tech',
+    name: 'Tech',
+    desc: 'Dark header with teal accents and code-inspired styling. Built for developers and engineers.',
+    component: TechTemplate,
+    tags: ['Developer', 'Dark Header', 'Teal Accent'],
+    accentColor: '#0D9488',
+    category: 'Technical',
+  },
+  {
+    id: 'elegant',
+    name: 'Elegant',
+    desc: 'Refined serif typography with centered header and fine lines. Perfect for senior academics and executives.',
+    component: ElegantTemplate,
+    tags: ['Serif', 'Centered', 'Refined'],
+    accentColor: '#8B6914',
+    category: 'Minimal',
   },
 ];
+
+const categories = ['All', 'Professional', 'Creative', 'Technical', 'Minimal'];
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
   visible: (i = 0) => ({
     opacity: 1,
     y: 0,
-    transition: { delay: i * 0.15, duration: 0.5, ease: 'easeOut' },
+    transition: { delay: i * 0.1, duration: 0.45, ease: 'easeOut' },
   }),
 };
 
 export default function Templates() {
   const { setTemplate } = useResume();
   const navigate = useNavigate();
+  const [activeCategory, setActiveCategory] = useState('All');
+  const [hoveredId, setHoveredId] = useState(null);
+
+  const filtered = activeCategory === 'All'
+    ? templates
+    : templates.filter(t => t.category === activeCategory);
 
   const handleSelect = (templateId) => {
     setTemplate(templateId);
@@ -109,79 +164,184 @@ export default function Templates() {
   };
 
   return (
-    <div className="min-h-screen bg-darkBg">
+    <div className="min-h-screen bg-primary">
       <Navbar />
 
       <div className="pt-28 pb-20 px-4">
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-7xl mx-auto">
+
+          {/* Header */}
           <motion.div
             initial="hidden"
             animate="visible"
             variants={fadeUp}
-            className="text-center mb-14"
+            className="text-center mb-10"
           >
             <h1 className="font-heading text-4xl sm:text-5xl font-bold text-textLight mb-4">
               Choose Your <span className="text-gradient">Template</span>
             </h1>
             <p className="text-lg text-muted max-w-xl mx-auto">
-              Pick a design that matches your style. Every template is optimized for ATS and looks stunning in PDF.
+              {templates.length} professionally designed templates — all ATS-friendly and print-ready.
             </p>
           </motion.div>
 
-          <div className="grid lg:grid-cols-3 gap-8">
-            {templates.map((t, i) => {
-              const TemplateComp = t.component;
-              return (
-                <motion.div
-                  key={t.id}
-                  initial="hidden"
-                  animate="visible"
-                  variants={fadeUp}
-                  custom={i + 1}
-                  className="group"
-                >
-                  <div className="glass-card-hover overflow-hidden">
-                    {/* Template Preview */}
-                    <div className="relative bg-white overflow-hidden" style={{ height: '380px' }}>
+          {/* Category Filter */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15, duration: 0.4 }}
+            className="flex flex-wrap justify-center gap-2 mb-10"
+          >
+            {categories.map(cat => (
+              <button
+                key={cat}
+                onClick={() => setActiveCategory(cat)}
+                className={`px-4 py-1.5 rounded-full text-sm font-medium border transition-all duration-200
+                  ${activeCategory === cat
+                    ? 'bg-accent text-white border-accent shadow-md shadow-accent/20'
+                    : 'bg-white text-muted border-gray-200 hover:border-accent/40 hover:text-accent'
+                  }`}
+              >
+                {cat}
+                {cat !== 'All' && (
+                  <span className="ml-1.5 text-[10px] opacity-70">
+                    ({templates.filter(t => t.category === cat).length})
+                  </span>
+                )}
+              </button>
+            ))}
+          </motion.div>
+
+          {/* Template Grid */}
+          <AnimatePresence mode="popLayout">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {filtered.map((t, i) => {
+                const TemplateComp = t.component;
+                const isHovered = hoveredId === t.id;
+                return (
+                  <motion.div
+                    key={t.id}
+                    layout
+                    initial="hidden"
+                    animate="visible"
+                    exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.2 } }}
+                    variants={fadeUp}
+                    custom={i}
+                    className="group flex flex-col"
+                    onMouseEnter={() => setHoveredId(t.id)}
+                    onMouseLeave={() => setHoveredId(null)}
+                  >
+                    <div className="glass-card-hover flex flex-col h-full overflow-hidden">
+                      {/* Template Preview */}
                       <div
-                        style={{
-                          transform: 'scale(0.38)',
-                          transformOrigin: 'top left',
-                          width: '794px',
-                          minHeight: '1123px',
-                          pointerEvents: 'none',
-                        }}
+                        className="relative bg-gray-50 overflow-hidden cursor-pointer"
+                        style={{ height: '320px' }}
+                        onClick={() => handleSelect(t.id)}
                       >
-                        <TemplateComp resumeData={sampleData} />
+                        {/* Scaled template */}
+                        <div
+                          style={{
+                            transform: 'scale(0.32)',
+                            transformOrigin: 'top left',
+                            width: '794px',
+                            minHeight: '1123px',
+                            pointerEvents: 'none',
+                          }}
+                        >
+                          <TemplateComp resumeData={sampleData} />
+                        </div>
+
+                        {/* Accent color strip at top */}
+                        <div
+                          className="absolute top-0 left-0 right-0 h-1"
+                          style={{ backgroundColor: t.accentColor }}
+                        />
+
+                        {/* Hover overlay with CTA */}
+                        <motion.div
+                          animate={{ opacity: isHovered ? 1 : 0 }}
+                          transition={{ duration: 0.2 }}
+                          className="absolute inset-0 flex flex-col items-center justify-center gap-3"
+                          style={{ backgroundColor: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(2px)' }}
+                        >
+                          <button
+                            onClick={(e) => { e.stopPropagation(); handleSelect(t.id); }}
+                            className="btn-primary text-sm py-2 px-5 shadow-xl"
+                          >
+                            Use This Template
+                          </button>
+                          <span className="text-white/80 text-xs">Click anywhere to select</span>
+                        </motion.div>
                       </div>
-                      {/* Hover overlay */}
-                      <div className="absolute inset-0 bg-accent/0 group-hover:bg-accent/10 transition-colors duration-300 flex items-center justify-center">
+
+                      {/* Info */}
+                      <div className="p-4 flex flex-col flex-1">
+                        <div className="flex items-center gap-2 mb-1.5">
+                          <span
+                            className="w-3 h-3 rounded-full shrink-0"
+                            style={{ backgroundColor: t.accentColor }}
+                          />
+                          <h3 className="font-heading text-base font-semibold text-textLight">{t.name}</h3>
+                          <span className="ml-auto text-[10px] px-2 py-0.5 rounded-full bg-gray-100 text-muted border border-gray-200">
+                            {t.category}
+                          </span>
+                        </div>
+                        <p className="text-xs text-muted leading-relaxed mb-3 flex-1">{t.desc}</p>
+                        <div className="flex flex-wrap gap-1.5 mb-3">
+                          {t.tags.map(tag => (
+                            <span
+                              key={tag}
+                              className="text-[9px] px-2 py-0.5 rounded-full border font-medium"
+                              style={{
+                                backgroundColor: `${t.accentColor}12`,
+                                color: t.accentColor,
+                                borderColor: `${t.accentColor}30`,
+                              }}
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
                         <button
                           onClick={() => handleSelect(t.id)}
-                          className="btn-primary opacity-0 group-hover:opacity-100 scale-90 group-hover:scale-100 transition-all duration-300 shadow-lg"
+                          className="w-full py-2 rounded-lg text-xs font-semibold transition-all duration-200
+                            border-2 hover:text-white"
+                          style={{
+                            borderColor: t.accentColor,
+                            color: t.accentColor,
+                          }}
+                          onMouseEnter={e => {
+                            e.currentTarget.style.backgroundColor = t.accentColor;
+                            e.currentTarget.style.color = '#fff';
+                          }}
+                          onMouseLeave={e => {
+                            e.currentTarget.style.backgroundColor = 'transparent';
+                            e.currentTarget.style.color = t.accentColor;
+                          }}
                         >
                           Use This Template
                         </button>
                       </div>
                     </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </AnimatePresence>
 
-                    {/* Info */}
-                    <div className="p-5">
-                      <h3 className="font-heading text-xl font-semibold text-textLight mb-2">{t.name}</h3>
-                      <p className="text-sm text-muted mb-3 leading-relaxed">{t.desc}</p>
-                      <div className="flex flex-wrap gap-2">
-                        {t.tags.map((tag) => (
-                          <span key={tag} className="text-[10px] px-2.5 py-0.5 rounded-full bg-accent/10 text-accent border border-accent/20">
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-              );
-            })}
-          </div>
+          {/* Bottom CTA */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.6 }}
+            className="text-center mt-16"
+          >
+            <p className="text-muted text-sm mb-4">Already using a template? Jump back to your resume.</p>
+            <Link to="/builder" className="btn-secondary text-sm py-2.5 px-6 inline-flex">
+              ← Back to Builder
+            </Link>
+          </motion.div>
+
         </div>
       </div>
     </div>
